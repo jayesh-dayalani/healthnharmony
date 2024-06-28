@@ -7,7 +7,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
     <link href='https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
 </head>
 
 <body>
@@ -19,11 +19,34 @@
                 <label>
                     <span class="q-text">
                         {{q.question}}
-                        <span class="q-answer">
-                            {{q.answer}}
+                        <span class="q-answer" ng-if="q.answer">
+                            - {{q.answer}}
                         </span>
                     </span>
-                    <input type="text" ng-if="!q.isSignature" id="q{{$index}}" ng-model="q.answer">
+                    <!-- First dropdown for availing services -->
+                    <select ng-if="q.question === 'Your availing services?'" ng-model="q.answer" ng-init="q.answer = servicesOptions[0].value"
+                        ng-change="calculateSum()">
+                        <option ng-repeat="option in servicesOptions" value="{{option.value}}">{{option.label}}</option>
+                    </select>
+
+                    <!-- Second dropdown for additional services -->
+                    <select ng-if="q.question === 'Additional services?'" ng-model="q.answer" ng-init="q.answer = additionalOptions[0].value"
+                        ng-change="calculateSum()">
+                        <option ng-repeat="option in additionalOptions" value="{{option.value}}">{{option.label}}</option>
+                    </select>
+
+                    <!-- Third dropdown for payment gateway -->
+                    <select ng-if="q.question === 'Payment Gateway?'" ng-model="q.answer" ng-init="q.answer = paymentOptions[0].value"
+                        ng-change="calculateSum()">
+                        <option ng-repeat="option in paymentOptions" value="{{option.value}}">{{option.label}}</option>
+                    </select>
+
+                    <!-- Text input for other questions -->
+                    <div ng-if="!q.isSignature && q.question !== 'Your availing services?' && q.question !== 'Additional services?' && q.question !== 'Payment Gateway?'">
+                        <input type="text" id="q{{$index}}" ng-model="q.answer">
+                    </div>
+
+                    <!-- Signature canvas -->
                     <div ng-if="q.isSignature">
                         <canvas id="signatureCanvas{{$index}}" width="400" height="150"></canvas>
                     </div>
@@ -33,24 +56,33 @@
             <div class="q-after">
                 <hr>
                 <div class="q-confirm-text">Is the above information correct?</div>
-                <div class="q-confirm-button"><a href="https://jayesh-dayalani.github.io/healthnharmony/" style="text-decoration: none;">Absolutely</a></div>
+                <div class="q-confirm-button"><a href="/index.html" ng-click="submitForm()">Cancle</a></div>
+                <br>
+                <div class="q-confirm-button"><a href="/index.html" ng-click="submitForm()">Upload</a></div>
             </div>
+
+
+        </div>
+        <!-- Display sum of selected services -->
+        <div class="sum-display" ng-show="totalSum !== null">
+            <h3>Total Selected Services Cost: {{ totalSum }}</h3>
         </div>
         <center ng-show="activequestion > -1 && activequestion < questions.length">{{activequestion+1}} / {{questions.length}}</center>
     </div>
     <div class="terms-conditions">
         <h2>Terms and Conditions</h2>
         <ol>
-            <li>All participants must sign a waiver before using the trampoline park.</li>
-            <li>Participants under the age of 18 must have a waiver signed by a parent or guardian.</li>
-            <li>Proper trampoline park socks must be worn at all times.</li>
-            <li>No rough play, pushing, or shoving is allowed in the trampoline park.</li>
-            <li>Follow all staff instructions at all times for your safety.</li>
-            <li>Do not attempt flips or tricks beyond your skill level.</li>
-            <li>Only one person is allowed on a trampoline at a time.</li>
-            <li>No running on or around the trampolines.</li>
-            <li>All personal belongings must be stored in lockers or designated areas.</li>
-            <li>The trampoline park is not responsible for lost or stolen items.</li>
+            <!-- Your terms and conditions list -->
+            <li>**Assumption of Risk**: Participants acknowledge and assume all inherent risks of trampoline activities.</li>
+            <li>**Waiver of Liability**: Visitors release the park from liability for injuries except in cases of gross negligence.</li>
+            <li>**Age Restrictions**: Specific age limits apply, requiring minors to be supervised by an adult.</li>
+            <li>**Health and Safety Compliance**: Adherence to all health and safety guidelines, including wearing proper attire, is mandatory.</li>
+            <li>**Prohibited Activities**: Certain dangerous actions, like double bouncing or unsupervised flipping, are forbidden.</li>
+            <li>**Personal Responsibility**: Visitors are responsible for their actions and must supervise any minors they bring.</li>
+            <li>**Behavioral Standards**: Respectful, non-disruptive behavior is required at all times.</li>
+            <li>**Medical Conditions**: Individuals with specific health issues may be advised or required not to participate.</li>
+            <li>**Photo and Video Consent**: The park may use visitors’ images for promotional purposes without compensation.</li>
+            <li>**Refund and Cancellation Policy**: Policies on refunds and cancellations, including non-refundable tickets, apply.</li>
         </ol>
     </div>
     <script>
@@ -61,15 +93,46 @@
                     $scope.questions = [];
                     $scope.activequestion = -1;
                     $scope.answering = true;
+                    $scope.totalSum = null;
+                    $scope.formData = null;
+                    $scope.showFormData = false;
+
+                    $scope.servicesOptions = [
+                        { label: 'Select Service', value: '' },
+                        { label: '15 mins', value: '15 mins' },
+                        { label: '30 mins', value: '30 mins' },
+                        { label: '45 mins', value: '45 mins' },
+                        { label: '60 mins', value: '60 mins' },
+                        { label: '120 mins', value: '120 mins' }
+                    ];
+
+                    $scope.additionalOptions = [
+                        { label: 'Select Service', value: '' },
+                        { label: 'Socks XS', value: 'Socks XS' },
+                        { label: 'Socks S', value: 'Socks S' },
+                        { label: 'Socks M', value: 'Socks M' },
+                        { label: 'Socks L', value: 'Socks L' },
+                        { label: 'Socks XL', value: 'Socks XL' }
+                    ];
+
+                    $scope.paymentOptions = [
+                        { label: 'Payment Mode', value: '' },
+                        { label: 'Card', value: 'Card' },
+                        { label: 'Cash', value: 'Cash' },
+                        { label: 'UPI', value: 'UPI' }
+                    ];
 
                     $scope.questions.push({ 'question': 'What\'s your name?' });
                     $scope.questions.push({ 'question': 'What\'s Contact No?' });
                     $scope.questions.push({ 'question': 'How old are you?' });
                     $scope.questions.push({ 'question': 'Where do you live?' });
+                    $scope.questions.push({ 'question': 'Your availing services?' });
+                    $scope.questions.push({ 'question': 'Additional services?' });
+                    $scope.questions.push({ 'question': 'Payment Gateway?' });
                     $scope.questions.push({ 'question': 'Signature', 'isSignature': true });
 
                     function removeOpen() {
-                        for (i = 0; i < qs.length; i++) {
+                        for (var i = 0; i < qs.length; i++) {
                             angular.element(qs[i]).removeClass('open');
                         }
                     }
@@ -119,26 +182,56 @@
                         }, 10);
                     }
 
+                    $scope.calculateSum = function () {
+                        var sum = 0;
+                        for (var i = 0; i < $scope.questions.length; i++) {
+                            var q = $scope.questions[i];
+                            if (q.question === 'Your availing services?' || q.question === 'Additional services?') {
+                                sum += getServiceCost(q.answer);
+                            }
+                        }
+                        $scope.totalSum = sum;
+                    };
+
+                    function getServiceCost(service) {
+                        switch (service) {
+                            case '15 mins':
+                                return 10;
+                            case '30 mins':
+                                return 20;
+                            case '45 mins':
+                                return 30;
+                            case '60 mins':
+                                return 40;
+                            case '120 mins':
+                                return 50;
+                            case 'Socks XS':
+                                return 5;
+                            case 'Socks S':
+                                return 15;
+                            case 'Socks M':
+                                return 25;
+                            case 'Socks L':
+                                return 35;
+                            case 'Socks XL':
+                                return 45;
+                            default:
+                                return 0;
+                        }
+                    }
+
+                    $scope.submitForm = function () {
+                        var formData = angular.copy($scope.questions);
+                        $scope.formData = {
+                            questions: formData,
+                            totalSum: $scope.totalSum
+                        };
+                        $scope.showFormData = true;
+                        console.log($scope.formData);
+                    };
+
                     var handler = function (e) {
-                        if (e.keyCode === 37) {
-                            e.preventDefault();
-                            $scope.$apply(function () {
-                                $scope.open($scope.activequestion - 1);
-                            });
-                        }
-                        if (e.keyCode === 39) {
-                            e.preventDefault();
-                            $scope.$apply(function () {
-                                $scope.open($scope.activequestion + 1);
-                            });
-                        }
-                        if (e.keyCode === 13) {
-                            e.preventDefault();
-                            $scope.$apply(function () {
-                                $scope.open($scope.activequestion + 1);
-                            });
-                        }
-                        if (e.keyCode == 9) {
+                        if (e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 13 || e.keyCode === 9) {
                             e.preventDefault();
                             $scope.$apply(function () {
                                 $scope.open($scope.activequestion + 1);
@@ -192,14 +285,6 @@
                 drawing = false;
             });
         }
-
-        coolform.controller('FormController', ['$scope', function ($scope) {
-            $scope.clearSignature = function (canvasId) {
-                var canvas = document.getElementById(canvasId);
-                var ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            };
-        }]);
     </script>
 </body>
 

@@ -1,18 +1,22 @@
+/* Global Box Model */
 * {
     box-sizing: border-box;
     position: relative;
 }
 
+/* Body Styling */
 body {
     background: #2D82CB;
     font-family: "lato", sans-serif;
     color: rgba(255, 255, 255, 0.7);
 }
 
+/* Wrapper Styles */
 .wrapper {
     text-align: center;
 }
 
+/* Form Wrapper Styles */
 #form-wrapper {
     margin-top: 20px;
     height: 450px;
@@ -25,6 +29,7 @@ body {
     overflow: hidden;
 }
 
+/* Logo Styles */
 .logo {
     display: block;
     margin: 0 auto;
@@ -32,6 +37,7 @@ body {
     width: 150px;
 }
 
+/* Question Styles */
 .question {
     width: 400px;
     margin: 0 auto;
@@ -50,6 +56,7 @@ body {
 }
 
 .question input,
+.question select,
 .question .q-next {
     display: none;
 }
@@ -73,7 +80,8 @@ body {
     font-size: 30px;
 }
 
-.question.open input {
+.question.open input,
+.question.open select {
     display: block;
 }
 
@@ -90,6 +98,7 @@ body {
     display: none;
 }
 
+/* Next Button Styles */
 .q-next {
     display: block;
     position: absolute;
@@ -107,12 +116,14 @@ body {
     background: rgba(255, 255, 255, .1);
 }
 
+/* Question Text Styles */
 .q-text {
     max-height: 40px;
     overflow: hidden;
     display: block;
 }
 
+/* Label Styles */
 label {
     display: block;
     width: 100%;
@@ -120,7 +131,9 @@ label {
     line-height: 40px;
 }
 
-input {
+/* Textbox and Select Styles */
+input,
+select {
     border: 0px;
     outline: 0;
     box-shadow: 0;
@@ -132,8 +145,31 @@ input {
     line-height: 50px;
     padding: 0 10px;
     font-size: 30px;
+    /* Remove default dropdown arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Add custom arrow */
+    background-image: url('path/to/custom-arrow.svg');
+    background-repeat: no-repeat;
+    background-position: right center;
+    padding-right: 30px; /* Adjust padding for arrow */
 }
 
+/* Styling on Focus */
+input:focus,
+select:focus {
+    background: rgba(0, 0, 0, .3);
+    color: white;
+}
+
+/* Styling on Hover */
+input:hover,
+select:hover {
+    background: rgba(0, 0, 0, .25);
+}
+
+/* Confirmation Section Styles */
 .q-title {
     text-align: center;
     line-height: 150px;
@@ -146,6 +182,7 @@ input {
     margin: 0 auto;
     overflow: hidden;
     padding: 20px 0;
+   
 }
 
 .q-confirm-text {
@@ -188,6 +225,7 @@ input {
     color: white;
 }
 
+/* Horizontal Rule Styling */
 hr {
     box-shadow: 0px;
     outline: 0px;
@@ -196,11 +234,13 @@ hr {
     background: rgba(255, 255, 255, .2);
 }
 
+/* Signature Canvas Styles */
 canvas {
     background-color: white;
     border: 1px solid #000000;
 }
 
+/* Terms and Conditions Styles */
 .terms-conditions {
     width: 80%;
     margin: 20px auto;
@@ -215,8 +255,4 @@ canvas {
 
 .terms-conditions h2 {
     text-align: center;
-}
-
-.center-button {
-    
 }
